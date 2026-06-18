@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VISION·S — Sélection</title>
+<meta name="description" content="Portfolio cinématographique — projets présentés en coverflow 3D." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --bg:        #070605;
+  --ink:       #f4eee3;
+  --ink-dim:   #948b7d;
+  --ink-faint: #5a5247;
+  --accent:    #a886ff;        /* violet (flash) */
+  --accent-2:  #8a5cf0;        /* violet profond */
+  --line:      rgba(244,238,227,.10);
+
+  /* géométrie coverflow — rectangles PORTRAIT */
+  --cover-w: 326px;
+  --cover-h: 452px;
+  --gap: 32px;                 /* espace ; step = cover-w + gap */
+  --tilt: -44deg;
+  --focus: 42vw;               /* point focal de la carte active (décalé à gauche) */
+
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --ease-rot: cubic-bezier(.16,.84,.34,1);
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+
+body{
+  background:
+    radial-gradient(120% 75% at 50% -15%, rgba(155,108,240,.09), transparent 55%),
+    radial-gradient(90% 55% at 50% 120%, rgba(168,134,255,.05), transparent 60%),
+    var(--bg);
+  color:var(--ink);
+  font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  overflow:hidden;
+  height:100vh;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  transition:opacity .35s var(--ease);
+}
+body.leaving{ opacity:0; }
+body::after{                     /* vignette ciné */
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:60;
+  background:radial-gradient(135% 130% at 50% 45%, transparent 52%, rgba(0,0,0,.6) 100%);
+  mix-blend-mode:multiply;
+}
+.mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.topbar{
+  position:fixed; top:0; left:0; right:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:22px clamp(18px,3.5vw,46px);
+}
+.logo{
+  font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight:700; font-size:18px; letter-spacing:-.01em;
+  display:flex; align-items:center; gap:2px;
+}
+.logo b{ color:var(--accent); font-weight:700; }
+.nav{ display:flex; gap:30px; position:absolute; left:50%; transform:translateX(-50%); }
+.nav a{
+  color:var(--ink-dim); text-decoration:none;
+  font-size:12.5px; font-weight:500; position:relative;
+  transition:color .25s var(--ease);
+}
+.nav a::after{
+  content:""; position:absolute; left:0; right:0; bottom:-6px; height:1px;
+  background:var(--accent); transform:scaleX(0); transform-origin:left;
+  transition:transform .3s var(--ease);
+}
+.nav a:hover, .nav a:focus-visible{ color:var(--ink); }
+.nav a:hover::after, .nav a:focus-visible::after{ transform:scaleX(1); }
+.badge{
+  display:flex; align-items:center; gap:8px;
+  font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-dim);
+  border:1px solid var(--line); padding:7px 13px; border-radius:999px;
+  background:rgba(255,255,255,.02); backdrop-filter:blur(6px);
+}
+.badge .pulse{
+  width:6px; height:6px; border-radius:50%; background:var(--accent);
+  animation:pulse 2.4s infinite;
+}
+@keyframes pulse{
+  0%{ box-shadow:0 0 0 0 rgba(168,134,255,.55); }
+  70%{ box-shadow:0 0 0 8px rgba(168,134,255,0); }
+  100%{ box-shadow:0 0 0 0 rgba(168,134,255,0); }
+}
+
+/* ============================================================
+   HEADING (au-dessus des cartes, à gauche)
+   ============================================================ */
+.intro{
+  position:fixed; z-index:25;
+  top:clamp(78px,13vh,120px); left:clamp(18px,3.5vw,46px);
+  max-width:430px; pointer-events:none;
+}
+.intro .kicker{
+  font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--accent);
+  margin-bottom:18px;
+}
+.intro h1{
+  font-size:clamp(34px,5.2vw,64px); font-weight:700; line-height:.98; letter-spacing:-.025em;
+}
+.intro p{
+  margin-top:20px; color:var(--ink-dim); font-size:14px; line-height:1.55; max-width:300px;
+}
+
+/* ============================================================
+   STAGE / COVERFLOW
+   ============================================================ */
+.stage{
+  position:fixed; inset:0; z-index:10;
+  display:flex; align-items:center;
+  perspective:1700px; perspective-origin:50% 46%;
+  cursor:grab; touch-action:pan-y;
+}
+.stage.dragging{ cursor:grabbing; }
+
+.track{
+  display:flex; align-items:center;
+  gap:var(--gap);
+  padding-left:calc(var(--focus) - var(--cover-w)/2);
+  padding-right:60vw;
+  transform:translate3d(0,0,0);
+  will-change:transform; transform-style:preserve-3d;
+}
+
+.cover{
+  position:relative; flex:0 0 var(--cover-w);
+  width:var(--cover-w); height:var(--cover-h);
+  transform-style:preserve-3d;
+  border:0; padding:0; background:none; outline:none; cursor:pointer;
+  transform:rotateY(var(--tilt)) scale(.9);
+  filter:saturate(.85) brightness(.42);
+  transition:transform .65s var(--ease-rot), filter .65s var(--ease);
+}
+.cover .art{
+  position:absolute; inset:0; border-radius:8px; overflow:hidden;
+  background-image:var(--grad); background-size:cover; background-position:center;
+  box-shadow:0 28px 55px -22px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.05) inset;
+}
+.cover .art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.cover .art::after{                  /* lustre */
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(120deg, rgba(255,255,255,.16), transparent 38%, transparent 72%, rgba(0,0,0,.22));
+}
+/* scrim bas pour lisibilité de la légende (cartes avec .meta) */
+.cover:not(.no-meta) .art::before{
+  content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:linear-gradient(to top, rgba(0,0,0,.8), rgba(0,0,0,.25) 32%, transparent 58%);
+  opacity:0; transition:opacity .45s var(--ease);
+}
+.cover.is-active:not(.no-meta) .art::before,
+.cover:hover:not(.no-meta) .art::before,
+.cover:focus-visible:not(.no-meta) .art::before{ opacity:1; }
+.cover .num{
+  position:absolute; top:13px; left:15px; z-index:3;
+  font-size:11px; letter-spacing:.12em; color:rgba(255,255,255,.62);
+  text-shadow:0 1px 4px rgba(0,0,0,.6);
+}
+
+/* reflet au sol */
+.cover .reflection{
+  position:absolute; top:100%; left:0; right:0; height:var(--cover-h);
+  transform:scaleY(-1); border-radius:8px; overflow:hidden;
+  background-image:var(--grad); background-size:cover; background-position:center;
+  opacity:.28; margin-top:4px;
+  -webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,.5), transparent 48%);
+          mask-image:linear-gradient(to bottom, rgba(0,0,0,.5), transparent 48%);
+  pointer-events:none;
+}
+.cover .reflection img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+/* légende */
+.cover .meta{
+  position:absolute; left:18px; right:18px; bottom:20px; text-align:left;
+  display:flex; flex-direction:column; align-items:flex-start;
+  opacity:0; transform:translateY(8px);
+  transition:opacity .45s var(--ease) .1s, transform .45s var(--ease) .1s;
+  pointer-events:none; z-index:3;
+}
+.cover .meta .cat{
+  font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.7); margin-bottom:7px;
+}
+.cover .meta .title{
+  font-size:26px; font-weight:700; line-height:1.05; letter-spacing:-.01em; color:#fff;
+}
+.cover .meta .yr{ margin-top:5px; font-size:11px; color:rgba(255,255,255,.6); }
+.cover .meta .open{
+  display:block; margin-top:14px; font-size:10.5px; letter-spacing:.12em;
+  color:var(--accent); opacity:.9;
+}
+
+/* état actif / survol : face caméra, soulevée */
+.cover.is-active,
+.cover:hover,
+.cover:focus-visible{
+  transform:rotateY(0deg) translateZ(70px) scale(1.05);
+  filter:saturate(1.05) brightness(1);
+  z-index:5;
+}
+.cover.is-active .meta,
+.cover:hover .meta,
+.cover:focus-visible .meta{ opacity:1; transform:translateY(0); }
+
+.cover.is-active .art{
+  box-shadow:
+    0 60px 90px -30px rgba(0,0,0,.92),
+    0 0 70px -8px var(--glow),
+    0 0 0 1px rgba(255,255,255,.12) inset;
+}
+.cover:focus-visible .art{
+  box-shadow:
+    0 60px 90px -30px rgba(0,0,0,.92),
+    0 0 0 3px var(--accent),
+    0 0 70px -8px var(--glow);
+}
+
+/* ============================================================
+   FLÈCHES
+   ============================================================ */
+.arrow{
+  position:fixed; top:50%; transform:translateY(-50%); z-index:35;
+  width:48px; height:48px; border-radius:50%; display:grid; place-items:center;
+  background:rgba(22,17,11,.5); border:1px solid var(--line); color:var(--ink);
+  cursor:pointer; backdrop-filter:blur(8px);
+  transition:background .25s var(--ease), border-color .25s var(--ease), transform .2s var(--ease);
+}
+.arrow:hover{ background:rgba(168,134,255,.16); border-color:rgba(168,134,255,.4); }
+.arrow:focus-visible{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(168,134,255,.4); }
+.arrow:active{ transform:translateY(-50%) scale(.9); }
+.arrow.prev{ left:clamp(12px,2.5vw,30px); }
+.arrow.next{ right:clamp(12px,2.5vw,30px); }
+.arrow svg{ width:19px; height:19px; }
+
+/* ============================================================
+   BOTTOM BAR
+   ============================================================ */
+.bottombar{
+  position:fixed; left:0; right:0; bottom:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between; gap:18px;
+  padding:18px clamp(18px,3.5vw,46px) 22px;
+  background:linear-gradient(to top, rgba(7,6,5,.94), rgba(7,6,5,0));
+}
+.now{ display:flex; align-items:center; gap:11px; min-width:0; flex:1; }
+.now .led{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent-2); flex:0 0 auto; }
+.now .lbl{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); flex:0 0 auto; }
+.now .t{ font-size:14px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.dots{ display:flex; gap:8px; align-items:center; }
+.dots button{
+  width:7px; height:7px; border-radius:50%; border:0; padding:0; cursor:pointer;
+  background:var(--ink-faint);
+  transition:background .25s var(--ease), width .25s var(--ease);
+}
+.dots button:hover{ background:var(--ink-dim); }
+.dots button:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(168,134,255,.4); }
+.dots button.on{ background:var(--accent); width:20px; border-radius:4px; box-shadow:0 0 10px rgba(168,134,255,.6); }
+
+.hint{ flex:1; text-align:right; font-size:11px; letter-spacing:.14em; color:var(--ink-faint); white-space:nowrap; }
+.hint kbd{ font-family:"IBM Plex Mono",monospace; border:1px solid var(--line); border-radius:3px; padding:0 5px; font-size:10px; color:var(--ink-dim); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:900px){
+  :root{ --cover-w:280px; --cover-h:389px; --focus:50vw; --tilt:-40deg; }
+  .nav{ display:none; }
+  .intro{ max-width:none; right:clamp(18px,3.5vw,46px); }
+  .intro p{ display:none; }
+}
+@media (max-width:520px){
+  :root{ --cover-w:235px; --cover-h:326px; }
+  .intro h1{ font-size:34px; }
+  .hint{ display:none; }
+  .now .lbl{ display:none; }
+}
+
+/* ============================================================
+   INTRO / SPLASH VIDÉO
+   ============================================================ */
+.splash{
+  position:fixed; inset:0; z-index:9999;
+  background:#000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+  opacity:1; transition:opacity 1.4s var(--ease);
+}
+.splash.hide{ opacity:0; }
+.splash video{
+  width:clamp(150px,20vw,240px); height:auto; aspect-ratio:1/1;
+  object-fit:contain; display:block;
+}
+.splash .loading{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:12px; letter-spacing:.32em; text-transform:uppercase;
+  color:rgba(255,255,255,.55);
+  animation:loadPulse 1.6s ease-in-out infinite;
+}
+@keyframes loadPulse{ 0%,100%{ opacity:.35; } 50%{ opacity:.85; } }
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none !important; transition-duration:.001ms !important; }
+  .cover{ filter:saturate(.95) brightness(.85); }
+}
+</style>
+</head>
+<body>
+
+  <!-- MUSIQUE DE FOND -->
+  <audio id="bgm" src="CinematicBG.mp3" loop preload="auto"></audio>
+
+  <!-- INTRO / SPLASH VIDÉO -->
+  <div class="splash" id="splash" role="dialog" aria-label="Intro">
+    <video id="introVideo" autoplay muted playsinline preload="auto">
+      <source src="intro.webm" type="video/webm" />
+      <source src="intro.mp4" type="video/mp4" />
+    </video>
+    <p class="loading">chargement</p>
+  </div>
+  <script>
+  (function(){
+    /* ---- Musique de fond (volume très bas) ---- */
+    const bgm = document.getElementById('bgm');
+    bgm.volume = 0.10;
+    function startMusic(){ const r = bgm.play(); if (r && r.catch) r.catch(()=>{}); }
+    // l'autoplay audio est souvent bloqué → on démarre à la 1re interaction
+    ['pointerdown','keydown','wheel','touchstart'].forEach(ev =>
+      addEventListener(ev, startMusic, { once:true, passive:true }));
+    startMusic(); // tentative immédiate
+
+    /* ---- Intro / splash ---- */
+    const splash = document.getElementById('splash');
+    const video  = document.getElementById('introVideo');
+    const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const seen   = sessionStorage.getItem('introSeen');
+
+    let entered = false;
+    function enter(){
+      if (entered) return; entered = true;
+      splash.classList.add('hide');                 // fondu long (~1.4s, voir CSS)
+      sessionStorage.setItem('introSeen','1');
+      startMusic();
+      setTimeout(()=>{ splash.style.display='none'; }, 1450); // retire après le fondu
+    }
+
+    // reduced-motion OU déjà vue cette session → on saute l'intro
+    if (reduce || seen){ splash.style.display = 'none'; return; }
+
+    // vitesse NORMALE (playbackRate = 1) ; on ne joue PAS jusqu'au bout :
+    // on coupe l'intro ~2.5s après le début de la lecture, puis fondu long.
+    let scheduled = false;
+    function scheduleExit(){ if (scheduled) return; scheduled = true; setTimeout(enter, 2500); }
+    video.addEventListener('playing', scheduleExit, { once:true });
+
+    // lance la lecture (muette) ; si l'autoplay est bloqué, on révèle le site
+    const pr = video.play();
+    if (pr && pr.catch) pr.catch(()=>{ enter(); });
+    setTimeout(scheduleExit, 1000); // garde-fou si l'event 'playing' n'arrive pas
+  })();
+  </script>
+
+  <header class="topbar">
+    <div class="logo">ANTHONY DA COSTA</div>
+    <nav class="nav" aria-label="Sections">
+      <a href="index.html">Projets</a>
+      <a href="apropos.html">À propos</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <div class="intro">
+    <div class="kicker mono">Portfolio — Sélection</div>
+    <h1>Les projets</h1>
+    <p>Survolez une pochette : elle pivote pour révéler le projet. Faites défiler à la molette, au drag ou aux flèches.</p>
+  </div>
+
+  <main class="stage" id="stage" aria-roledescription="carrousel" aria-label="Projets">
+    <div class="track" id="track"></div>
+  </main>
+
+  <button class="arrow prev" id="prev" aria-label="Précédent">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <button class="arrow next" id="next" aria-label="Suivant">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+
+  <footer class="bottombar">
+    <div class="now">
+      <span class="led"></span>
+      <span class="lbl mono">En vue</span>
+      <span class="t" id="npText" aria-live="polite">—</span>
+    </div>
+    <div class="dots" id="dots" role="tablist" aria-label="Pagination"></div>
+    <div class="hint mono">molette · drag · <kbd>←</kbd> <kbd>→</kbd></div>
+  </footer>
+
+<script src="projects.js"></script>
+<script>
+/* PROJECTS provient de projects.js (partagé avec project.html) */
+
+/* ============================================================
+   BUILD
+   ============================================================ */
+const track  = document.getElementById('track');
+const stage  = document.getElementById('stage');
+const dotsEl = document.getElementById('dots');
+const npText = document.getElementById('npText');
+const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+const covers = [];
+
+PROJECTS.forEach((p, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'cover' + (p.hideMeta ? ' no-meta' : '');
+  btn.style.setProperty('--grad', p.grad);
+  btn.style.setProperty('--glow', p.glow || 'rgba(168,134,255,.4)');
+  btn.setAttribute('aria-label', `${p.title} — ${p.cat}, ${p.year}`);
+  const n  = String(i + 1).padStart(2, '0');
+  const imgStyle = `object-position:${p.pos || 'center'};transform:scale(${p.zoom || 1});`;
+  const imgTag = p.img ? `<img src="${p.img}" alt="${p.title}" loading="lazy" style="${imgStyle}" onerror="this.remove()">` : '';
+  const refImg = p.img ? `<img src="${p.img}" alt="" loading="lazy" style="${imgStyle}" onerror="this.remove()">` : '';
+  // si l'image porte déjà le titre (hideMeta), on n'affiche pas le bloc texte
+  const metaTag = p.hideMeta ? '' : `
+    <span class="meta">
+      <span class="cat mono">${p.cat}</span>
+      <span class="title">${p.title}</span>
+      <span class="yr mono">${p.year}</span>
+      <span class="open mono">Ouvrir le projet →</span>
+    </span>`;
+
+  btn.innerHTML = `
+    <span class="art">${imgTag}</span>
+    <span class="reflection" aria-hidden="true">${refImg}</span>${metaTag}`;
+
+  btn.addEventListener('focus', () => goTo(i));
+  btn.addEventListener('click', () => {
+    if (moved > 6) return;
+    const dest = p.url || `project.html?p=${i}`;
+    document.body.classList.add('leaving');           // fondu de sortie
+    setTimeout(() => { location.href = dest; }, 300);
+  });
+  btn.addEventListener('mouseenter', () => showNow(i));
+  btn.addEventListener('mouseleave', () => showNow(active));
+  track.appendChild(btn);
+  covers.push(btn);
+
+  const dot = document.createElement('button');
+  dot.setAttribute('role','tab');
+  dot.setAttribute('aria-label', p.title);
+  dot.addEventListener('click', () => { goTo(i); covers[i].focus(); });
+  dotsEl.appendChild(dot);
+});
+const dots = [...dotsEl.children];
+
+/* ============================================================
+   MOTEUR DE DÉFILEMENT
+   ============================================================ */
+let step=0, pos=0, target=0, active=0, maxScroll=0;
+
+function measure(){
+  // mesure le DOM réel (robuste : pas dépendant du timing des variables CSS)
+  step = (covers[1] ? covers[1].offsetLeft - covers[0].offsetLeft : 0);
+  maxScroll = step * (PROJECTS.length - 1);
+  target = clamp(target); pos = target; apply();
+  return step > 0;
+}
+const clamp = v => Math.max(0, Math.min(maxScroll, v));
+
+function goTo(i){
+  if (!step) measure();
+  active = Math.max(0, Math.min(PROJECTS.length - 1, i));
+  target = clamp(active * step);
+}
+
+function loop(){
+  if (!step) measure();                 // réessaie tant que le layout n'est pas prêt
+  pos = reduce ? target : pos + (target - pos) * 0.1;
+  if (Math.abs(target - pos) < 0.4) pos = target;
+  apply();
+  requestAnimationFrame(loop);
+}
+
+let lastActive = -1;
+function apply(){
+  if (!step) return;
+  track.style.transform = `translate3d(${-pos}px,0,0)`;
+  const near = Math.max(0, Math.min(PROJECTS.length-1, Math.round(pos / step)));
+  if (near !== active) active = near;
+  if (active !== lastActive){
+    lastActive = active;
+    covers.forEach((c,i)=> c.classList.toggle('is-active', i===active));
+    dots.forEach((d,i)=>{ const on=i===active; d.classList.toggle('on',on); d.setAttribute('aria-selected', on); });
+    showNow(active);
+  }
+}
+function showNow(i){
+  const p = PROJECTS[i];
+  npText.textContent = `${p.title} — ${p.cat}, ${p.year}`;
+}
+
+/* molette */
+stage.addEventListener('wheel', e=>{
+  e.preventDefault();
+  if (!step) measure();
+  const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  target = clamp(target + d * 0.85);
+}, { passive:false });
+
+/* drag */
+let dragging=false, startX=0, startTarget=0, moved=0;
+const down = x=>{ if(!step) measure(); dragging=true; startX=x; startTarget=target; moved=0; stage.classList.add('dragging'); };
+const move = x=>{ if(!dragging) return; const dx=x-startX; moved=Math.abs(dx); target=clamp(startTarget-dx); };
+const up   = ()=>{ if(!dragging) return; dragging=false; stage.classList.remove('dragging'); target=clamp(Math.round(target/step)*step); };
+
+stage.addEventListener('mousedown', e=>down(e.clientX));
+addEventListener('mousemove', e=>move(e.clientX));
+addEventListener('mouseup', up);
+stage.addEventListener('touchstart', e=>down(e.touches[0].clientX), {passive:true});
+stage.addEventListener('touchmove',  e=>move(e.touches[0].clientX), {passive:true});
+stage.addEventListener('touchend', up);
+track.addEventListener('click', e=>{ if(moved>6){ e.preventDefault(); e.stopPropagation(); } }, true);
+
+/* clavier */
+addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight'){ e.preventDefault(); const n=Math.min(active+1,PROJECTS.length-1); goTo(n); covers[n].focus(); }
+  else if(e.key==='ArrowLeft'){ e.preventDefault(); const n=Math.max(active-1,0); goTo(n); covers[n].focus(); }
+  else if(e.key==='Home'){ e.preventDefault(); goTo(0); covers[0].focus(); }
+  else if(e.key==='End'){ e.preventDefault(); goTo(PROJECTS.length-1); covers[PROJECTS.length-1].focus(); }
+});
+document.getElementById('prev').addEventListener('click', ()=>goTo(active-1));
+document.getElementById('next').addEventListener('click', ()=>goTo(active+1));
+
+addEventListener('resize', measure);
+measure(); loop();
+</script>
+</body>
+</html>

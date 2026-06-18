@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact — Anthony Da Costa</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --bg:#070605; --ink:#f4eee3; --ink-dim:#948b7d; --ink-faint:#5a5247;
+  --accent:#ffb347; --accent-2:#ff8a2b; --line:rgba(244,238,227,.10);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ min-height:100%; }
+body{
+  background:
+    radial-gradient(110% 70% at 20% -10%, rgba(255,138,43,.10), transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh; display:flex; flex-direction:column;
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:60;
+  background:radial-gradient(135% 130% at 50% 45%, transparent 55%, rgba(0,0,0,.55) 100%);
+  mix-blend-mode:multiply;
+}
+.mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
+
+.top{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:24px clamp(20px,5vw,64px);
+}
+.back{
+  display:inline-flex; align-items:center; gap:9px;
+  color:var(--ink-dim); text-decoration:none; font-size:13px; font-weight:500;
+  transition:color .25s var(--ease), gap .25s var(--ease);
+}
+.back:hover, .back:focus-visible{ color:var(--ink); gap:13px; outline:none; }
+.back svg{ width:16px; height:16px; }
+.brand{ font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; font-weight:700; font-size:14px; color:var(--ink-dim); letter-spacing:-.01em; }
+
+main{
+  flex:1; display:flex; flex-direction:column; justify-content:center;
+  max-width:980px; width:100%; margin:0 auto;
+  padding:clamp(24px,6vh,80px) clamp(20px,5vw,64px) 90px;
+}
+.kicker{ font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--accent); margin-bottom:22px; }
+h1{ font-size:clamp(44px,8vw,104px); font-weight:700; line-height:.92; letter-spacing:-.03em; }
+.lead{ margin-top:26px; max-width:520px; color:var(--ink-dim); font-size:17px; line-height:1.6; }
+
+.email{
+  display:inline-flex; align-items:center; gap:14px;
+  margin-top:46px; text-decoration:none; color:var(--ink);
+  font-size:clamp(22px,3.5vw,40px); font-weight:600; letter-spacing:-.01em;
+  border-bottom:1px solid var(--line); padding-bottom:10px;
+  transition:color .25s var(--ease), border-color .25s var(--ease), gap .25s var(--ease);
+}
+.email:hover, .email:focus-visible{ color:var(--accent); border-color:var(--accent); gap:20px; outline:none; }
+.email svg{ width:.7em; height:.7em; color:var(--accent); flex:0 0 auto; }
+
+.rows{ margin-top:56px; display:flex; gap:48px; flex-wrap:wrap; }
+.row .k{ font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:9px; }
+.row .v{ font-size:15px; color:var(--ink); }
+.row a{ color:var(--ink); text-decoration:none; transition:color .25s var(--ease); }
+.row a:hover, .row a:focus-visible{ color:var(--accent); outline:none; }
+
+@media (prefers-reduced-motion:reduce){ *{ transition-duration:.001ms !important; } }
+</style>
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Les projets
+    </a>
+    <span class="brand">ANTHONY DA COSTA</span>
+  </header>
+
+  <main>
+    <div class="kicker mono">Contact — Disponible</div>
+    <h1>Travaillons<br>ensemble.</h1>
+    <p class="lead">Un projet de film, de captation, d'identité ou de 3D ? Écrivez-moi, je réponds vite.</p>
+
+    <a class="email" href="mailto:anthonydacosta1005@gmail.com">
+      anthonydacosta1005@gmail.com
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+    </a>
+
+    <div class="rows">
+      <div class="row">
+        <div class="k">Localisation</div>
+        <div class="v">Aix · France</div>
+      </div>
+      <div class="row">
+        <div class="k">Réseaux</div>
+        <div class="v"><a href="#">Instagram</a> · <a href="#">LinkedIn</a> · <a href="#">Vimeo</a></div>
+      </div>
+      <div class="row">
+        <div class="k">Statut</div>
+        <div class="v">Ouvert aux collaborations · 2026</div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

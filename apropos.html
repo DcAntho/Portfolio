@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>À propos — Anthony Da Costa</title>
+<meta name="description" content="Anthony Da Costa — créatif visuel : film, 3D, direction artistique et contenu." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --bg:#070608; --panel:#100e14; --ink:#f2eff5; --ink-dim:#9b95a6; --ink-faint:#5d586a;
+  --accent:#a886ff; --accent-2:#8a5cf0; --line:rgba(255,255,255,.09);
+  --maxw:1180px; --radius:16px; --shadow:0 50px 90px -34px rgba(0,0,0,.85);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+body{
+  background:radial-gradient(120% 60% at 20% -5%, rgba(168,134,255,.10), transparent 55%), var(--bg);
+  color:var(--ink); font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+  opacity:0; animation:pageIn .6s var(--ease) forwards;
+}
+@keyframes pageIn{ to{ opacity:1; } }
+body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:60; background:radial-gradient(135% 130% at 50% 45%, transparent 55%, rgba(0,0,0,.5) 100%); mix-blend-mode:multiply; }
+.mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
+
+.top{ display:flex; align-items:center; justify-content:space-between; padding:24px clamp(20px,5vw,64px); position:relative; z-index:2; }
+.back{ display:inline-flex; align-items:center; gap:9px; color:var(--ink-dim); text-decoration:none; font-size:13px; font-weight:500; transition:color .25s var(--ease), gap .25s var(--ease); }
+.back:hover, .back:focus-visible{ color:var(--ink); gap:13px; outline:none; }
+.back svg{ width:16px; height:16px; }
+.brand{ font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; font-weight:700; font-size:14px; color:var(--ink-dim); letter-spacing:-.01em; }
+
+.wrap{ max-width:var(--maxw); margin:0 auto; padding:clamp(20px,5vh,60px) clamp(20px,5vw,64px) 90px; position:relative; z-index:2; }
+.about{ display:grid; grid-template-columns:0.82fr 1fr; gap:clamp(32px,6vw,84px); align-items:center; }
+
+.portrait{ position:relative; border-radius:var(--radius); overflow:hidden; background:var(--panel); box-shadow:var(--shadow), 0 0 70px -16px rgba(168,134,255,.3), 0 0 0 1px var(--line) inset; }
+.portrait img{ width:100%; height:auto; display:block; }
+
+.bio .kicker{ font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--accent); margin-bottom:20px; }
+.bio h1{ font-size:clamp(38px,5.4vw,68px); font-weight:800; line-height:.98; letter-spacing:-.03em; }
+.bio .lead{ margin-top:24px; font-size:clamp(17px,1.7vw,21px); line-height:1.5; color:var(--ink); font-weight:500; }
+.bio .lead b{ color:var(--accent); font-weight:500; }
+.bio p{ margin-top:16px; color:var(--ink-dim); font-size:15.5px; line-height:1.7; max-width:520px; }
+
+.facts{ margin-top:32px; display:flex; gap:36px; flex-wrap:wrap; }
+.fact .k{ font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:7px; }
+.fact .v{ font-size:14px; color:var(--ink); }
+
+.cta{ margin-top:40px; display:flex; gap:14px; flex-wrap:wrap; }
+.cta a{ display:inline-flex; align-items:center; gap:9px; border:1px solid var(--line); border-radius:999px; padding:11px 20px; color:var(--ink); text-decoration:none; font-size:14px; transition:border-color .25s var(--ease), background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
+.cta a:hover, .cta a:focus-visible{ border-color:rgba(168,134,255,.5); background:rgba(168,134,255,.1); color:var(--accent); gap:13px; outline:none; }
+.cta a.solid{ background:var(--accent); border-color:var(--accent); color:#1a1030; font-weight:600; }
+.cta a.solid:hover, .cta a.solid:focus-visible{ background:var(--accent-2); border-color:var(--accent-2); color:#fff; }
+
+@media (max-width:820px){
+  .about{ grid-template-columns:1fr; gap:30px; }
+  .portrait{ max-width:420px; }
+}
+@media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } body{ animation:none; opacity:1; } }
+</style>
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="index.html" data-fade>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Les projets
+    </a>
+    <span class="brand">ANTHONY DA COSTA</span>
+  </header>
+
+  <main class="wrap">
+    <section class="about">
+      <figure class="portrait">
+        <img src="media/about-portrait.jpg" alt="Anthony Da Costa" />
+      </figure>
+
+      <div class="bio">
+        <div class="kicker mono">À propos</div>
+        <h1>Anthony<br>Da Costa</h1>
+        <p class="lead">Créatif visuel : je conçois des images qui racontent — <b>du film à la 3D, de l'identité au contenu social.</b></p>
+        <p>Mon travail navigue entre plusieurs disciplines : réalisation et captation vidéo, direction artistique, design et rendu 3D, illustration et contenu pour les réseaux. Ce qui les relie, c'est une même obsession — la lumière, le rythme et le détail juste.</p>
+        <p>J'aime les projets que je peux porter de bout en bout : penser le concept, tourner, monter, designer, livrer. Caméra à la main, je cherche une image cinématographique, sobre et chaude — et une idée qui tient.</p>
+        <p>Aujourd'hui, j'accompagne marques et indépendants pour donner forme à leurs projets : un film, une pochette, une identité, une série de posts.</p>
+
+        <div class="facts">
+          <div class="fact"><div class="k">Basé à</div><div class="v">Aix · France</div></div>
+          <div class="fact"><div class="k">Disciplines</div><div class="v">Film · 3D · DA · Contenu</div></div>
+          <div class="fact"><div class="k">Boîte à outils</div><div class="v">Sony · Adobe · Cinema 4D</div></div>
+        </div>
+
+        <div class="cta">
+          <a class="solid" href="contact.html" data-fade>Travaillons ensemble →</a>
+          <a href="index.html" data-fade>Voir les projets</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  document.querySelectorAll('a[data-fade]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); document.body.style.transition='opacity .35s var(--ease)'; document.body.style.opacity='0';
+    setTimeout(()=>{ location.href=a.getAttribute('href'); }, 320);
+  }));
+</script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>map.ch — Anthony Da Costa</title>
+<meta name="description" content="map.ch — studio de contenu social. Direction artistique et production pour des marques suisses." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --bg:#07060a;
+  --panel:#0e0d12;
+  --ink:#f1eef5;
+  --ink-dim:#9d97a8;
+  --ink-faint:#5f5a6b;
+  --accent:#ffb347;          /* accent doré du site */
+  --accent-2:#ff8a2b;
+  --line:rgba(255,255,255,.09);
+  --maxw:1200px;
+  --radius:16px;
+  --shadow:0 50px 90px -34px rgba(0,0,0,.85);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+body{
+  background:
+    radial-gradient(120% 60% at 50% -5%, rgba(255,179,71,.09), transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  opacity:0; animation:pageIn .6s var(--ease) forwards;
+}
+@keyframes pageIn{ to{ opacity:1; } }
+.mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
+
+.back{
+  position:fixed; top:24px; left:24px; z-index:50;
+  width:48px; height:48px; border-radius:50%; display:grid; place-items:center;
+  background:rgba(20,18,24,.55); border:1px solid var(--line); color:var(--ink);
+  text-decoration:none; backdrop-filter:blur(8px);
+  transition:background .25s var(--ease), border-color .25s var(--ease), transform .2s var(--ease);
+}
+.back:hover, .back:focus-visible{ background:rgba(255,179,71,.18); border-color:rgba(255,179,71,.5); outline:none; }
+.back:active{ transform:scale(.92); }
+.back svg{ width:20px; height:20px; }
+
+.wrap{ max-width:var(--maxw); margin:0 auto; padding:0 clamp(18px,4vw,48px); }
+
+/* ===== HÉRO ===== */
+.hero{ padding-top:clamp(86px,12vh,140px); }
+.hero-frame{
+  position:relative; width:100%; aspect-ratio:16/9;
+  border-radius:var(--radius); overflow:hidden; background:var(--panel);
+  box-shadow:var(--shadow), 0 0 0 1px var(--line) inset;
+}
+.hero-frame video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.hero-frame .scrim{ position:absolute; inset:0; pointer-events:none; background:linear-gradient(to top, rgba(0,0,0,.55), transparent 42%); }
+.hero-cap{ position:absolute; left:clamp(20px,3vw,40px); bottom:clamp(20px,3vw,36px); z-index:2; }
+.hero-cap h1{ font-size:clamp(46px,8vw,100px); font-weight:800; line-height:.9; letter-spacing:-.03em; }
+.hero-cap .ctx{ margin-top:12px; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); }
+
+/* ===== INTRO ===== */
+.intro{
+  display:grid; grid-template-columns:1.1fr 1fr; gap:clamp(28px,5vw,72px);
+  padding:clamp(56px,9vh,120px) 0 clamp(20px,4vh,40px);
+}
+.intro .lead{ font-size:clamp(22px,2.6vw,32px); font-weight:500; line-height:1.3; letter-spacing:-.01em; }
+.intro .lead b{ color:var(--accent); font-weight:500; }
+.intro .body{ color:var(--ink-dim); font-size:15.5px; line-height:1.7; }
+.facts{ margin-top:26px; display:flex; gap:40px; flex-wrap:wrap; }
+.fact .k{ font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:7px; }
+.fact .v{ font-size:14px; color:var(--ink); }
+
+/* ===== CLIENTS / GALERIE ===== */
+.clients{ padding:clamp(20px,4vh,40px) 0 clamp(80px,12vh,140px); }
+.client{ margin-top:clamp(56px,9vh,108px); }
+.client:first-child{ margin-top:0; }
+.client-head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+  border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:clamp(20px,3vh,32px);
+}
+.client-head h2{ font-size:clamp(24px,3.4vw,42px); font-weight:800; letter-spacing:-.02em; }
+.client-head .tag{ font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); white-space:nowrap; }
+
+.masonry{ columns:300px; column-gap:clamp(14px,1.6vw,22px); }
+.frame{
+  display:block; break-inside:avoid; margin:0 0 clamp(14px,1.6vw,22px);
+  border-radius:var(--radius); overflow:hidden; background:var(--panel);
+  box-shadow:var(--shadow), 0 0 0 1px var(--line) inset;
+}
+.frame img{ width:100%; height:auto; display:block; }
+
+/* ===== PIED ===== */
+.foot{ border-top:1px solid var(--line); padding:48px 0 80px; display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; }
+.foot a{ display:inline-flex; align-items:center; gap:10px; color:var(--ink); text-decoration:none; font-size:15px; transition:color .25s var(--ease), gap .25s var(--ease); }
+.foot a:hover, .foot a:focus-visible{ color:var(--accent); gap:14px; outline:none; }
+.foot .sig{ font-size:12px; color:var(--ink-faint); letter-spacing:.04em; }
+
+@media (max-width:760px){
+  .intro{ grid-template-columns:1fr; gap:24px; }
+}
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  body{ animation:none; opacity:1; }
+}
+</style>
+</head>
+<body>
+
+  <a class="back" href="../../index.html" data-fade aria-label="Retour aux projets">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </a>
+
+  <!-- HÉRO -->
+  <header class="hero">
+    <div class="wrap">
+      <div class="hero-frame">
+        <video src="../../media/mapch/mapch-hero.mp4" autoplay muted loop playsinline preload="auto"></video>
+        <div class="scrim"></div>
+        <div class="hero-cap">
+          <h1>map.ch</h1>
+          <div class="ctx mono">Réseaux sociaux · Direction de contenu — 2025</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- INTRO -->
+  <section class="wrap">
+    <div class="intro">
+      <p class="lead">map.ch — un <b>studio de contenu social</b> : direction artistique et production de publications pour des marques suisses.</p>
+      <div>
+        <p class="body">De la ligne éditoriale au visuel final, map.ch décline pour chaque client une identité cohérente sur les réseaux : posts, carrousels et formats stories. Quatre univers, quatre tons — du trail à l'énergie, de la piscine à la finance.</p>
+        <div class="facts">
+          <div class="fact"><div class="k">Rôle</div><div class="v">Social media · DA · Production</div></div>
+          <div class="fact"><div class="k">Année</div><div class="v mono">2025</div></div>
+          <div class="fact"><div class="k">Clients</div><div class="v mono">04</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIENTS -->
+  <main class="wrap clients">
+
+    <!-- SwissPeaks -->
+    <section class="client">
+      <div class="client-head"><h2>SwissPeaks</h2><span class="tag mono">Réseaux sociaux · Trail</span></div>
+      <div class="masonry">
+        <span class="frame"><img src="../../media/mapch/swisspeaks/favoris.png" alt="SwissPeaks — favoris de la course" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/swisspeaks/info.png" alt="SwissPeaks — info" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/swisspeaks/some-19.png" alt="SwissPeaks — visuel" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/swisspeaks/shot.png" alt="SwissPeaks — story" loading="lazy"></span>
+      </div>
+    </section>
+
+    <!-- SEIC -->
+    <section class="client">
+      <div class="client-head"><h2>SEIC</h2><span class="tag mono">Réseaux sociaux · Énergie</span></div>
+      <div class="masonry">
+        <span class="frame"><img src="../../media/mapch/seic/13.png" alt="SEIC — backbone 10Gbit/s" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/seic/photovoltaiques.png" alt="SEIC — photovoltaïque" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/seic/150miokwh.png" alt="SEIC — 150 Mio kWh" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/seic/5.png" alt="SEIC — visuel" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/seic/3-83.png" alt="SEIC — visuel" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/seic/lieux.png" alt="SEIC — lieux emblématiques" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/seic/lieux-2.png" alt="SEIC — lieux emblématiques" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/seic/shot.png" alt="SEIC — visuel large" loading="lazy"></span>
+      </div>
+    </section>
+
+    <!-- EspaceProPiscine -->
+    <section class="client">
+      <div class="client-head"><h2>EspaceProPiscine</h2><span class="tag mono">Réseaux sociaux · Piscines</span></div>
+      <div class="masonry">
+        <span class="frame"><img src="../../media/mapch/espacepropiscine/20.png" alt="EspaceProPiscine — visuel" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/espacepropiscine/21.png" alt="EspaceProPiscine — visuel" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/espacepropiscine/22.png" alt="EspaceProPiscine — visuel" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/espacepropiscine/23.png" alt="EspaceProPiscine — visuel" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/espacepropiscine/24.png" alt="EspaceProPiscine — visuel" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/espacepropiscine/29.png" alt="EspaceProPiscine — visuel" loading="lazy"></span>
+      </div>
+    </section>
+
+    <!-- OliMandats -->
+    <section class="client">
+      <div class="client-head"><h2>OliMandats</h2><span class="tag mono">Réseaux sociaux · Finance</span></div>
+      <div class="masonry">
+        <span class="frame"><img src="../../media/mapch/olimandats/1.png" alt="OliMandats — KPIs financiers" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/olimandats/ccm-1.png" alt="OliMandats — comment ça marche" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/olimandats/ccm-2.png" alt="OliMandats — comment ça marche" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/olimandats/ccm-3.png" alt="OliMandats — comment ça marche" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/olimandats/ccm-4.png" alt="OliMandats — comment ça marche" loading="lazy"></span>
+        <span class="frame"><img src="../../media/mapch/swisspeaks/rh.jpg" alt="OliMandats — ressources humaines" loading="lazy"></span>
+      </div>
+    </section>
+
+    <!-- pied -->
+    <div class="foot">
+      <a href="../../index.html" data-fade>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Tous les projets
+      </a>
+      <span class="sig">map.ch · Anthony Da Costa — 2025</span>
+    </div>
+
+  </main>
+
+<script>
+  /* fondu de sortie sur les liens "retour" */
+  document.querySelectorAll('a[data-fade]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.body.style.transition = 'opacity .35s var(--ease)';
+      document.body.style.opacity = '0';
+      setTimeout(() => { location.href = a.getAttribute('href'); }, 320);
+    });
+  });
+</script>
+</body>
+</html>
