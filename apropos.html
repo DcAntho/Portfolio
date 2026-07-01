@@ -82,15 +82,15 @@ body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:6
       <div class="bio">
         <div class="kicker mono">À propos</div>
         <h1>Anthony<br>Da Costa</h1>
-        <p class="lead">Créatif visuel : je conçois des images qui racontent — <b>du film à la 3D, de l'identité au contenu social.</b></p>
-        <p>Mon travail navigue entre plusieurs disciplines : réalisation et captation vidéo, direction artistique, design et rendu 3D, illustration et contenu pour les réseaux. Ce qui les relie, c'est une même obsession — la lumière, le rythme et le détail juste.</p>
+        <p class="lead">Je n'ai qu'une passion dans la vie : la <b>curiosité</b>. Et forcément, elle m'en crée plein d'autres…</p>
+        <p>C'est elle qui me fait passer du film à la 3D, de l'identité au contenu social : réalisation et captation vidéo, direction artistique, design et rendu 3D, illustration. Ce qui relie tout ça, c'est une même obsession — la lumière, le rythme et le détail juste.</p>
         <p>J'aime les projets que je peux porter de bout en bout : penser le concept, tourner, monter, designer, livrer. Caméra à la main, je cherche une image cinématographique, sobre et chaude — et une idée qui tient.</p>
-        <p>Aujourd'hui, j'accompagne marques et indépendants pour donner forme à leurs projets : un film, une pochette, une identité, une série de posts.</p>
+        <p>Aujourd'hui, j'accompagne marques et indépendants pour donner forme à leurs projets : un film, une pochette, une identité, une série de posts. Et quand je ne crée pas, je suis passionné de <b style="color:var(--accent);font-weight:inherit">triathlon</b> — même rigueur, même goût de l'effort.</p>
 
         <div class="facts">
-          <div class="fact"><div class="k">Basé à</div><div class="v">Aix · France</div></div>
-          <div class="fact"><div class="k">Disciplines</div><div class="v">Film · 3D · DA · Contenu</div></div>
-          <div class="fact"><div class="k">Boîte à outils</div><div class="v">Sony · Adobe · Cinema 4D</div></div>
+          <div class="fact"><div class="k">Basé à</div><div class="v">Lausanne</div></div>
+          <div class="fact"><div class="k">Disciplines</div><div class="v">DA · Vidéo · Marketing · Réseaux sociaux</div></div>
+          <div class="fact"><div class="k">Boîte à outils</div><div class="v">Caméra FX6 · Suite Adobe · DaVinci Resolve</div></div>
         </div>
 
         <div class="cta">
@@ -106,6 +106,7 @@ body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:6
     e.preventDefault(); document.body.style.transition='opacity .35s var(--ease)'; document.body.style.opacity='0';
     setTimeout(()=>{ location.href=a.getAttribute('href'); }, 320);
   }));
+window.addEventListener("pageshow", function(){ document.body.classList.remove("leaving"); document.body.style.opacity=""; });
 </script>
 </body>
 </html>

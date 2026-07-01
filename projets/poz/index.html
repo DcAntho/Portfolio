@@ -160,9 +160,9 @@ body{
   <!-- INTRO -->
   <section class="wrap">
     <div class="intro">
-      <p class="lead">Poz est une <b>capsule de pause</b> — un refuge pensé pour ralentir, entre design d'objet, architecture et expérience sensorielle.</p>
+      <p class="lead">Poz est une <b>capsule pour prendre le temps de respirer</b>.</p>
       <div>
-        <p class="body">Du concept au rendu 360°, Poz explore le geste simple de s'arrêter : une enveloppe de bois cintré, une lumière filtrée, un cocon de tissu. Le projet décline une identité complète — objet, espace, marque et capsules vidéo — autour d'une même promesse : retrouver le temps de respirer.</p>
+        <p class="body">Un espace qui mêle relaxation, luminothérapie et cohérence cardiaque, accompagné d'un effet sonore. Ce prototype préfigure le résultat final : un véritable concept 360° — de la conception de l'espace jusqu'à la communication (réseaux, spot vidéo) et au vernissage. Réalisé en collaboration avec un architecte pour la structure et Kylan pour les éléments 3D.</p>
         <div class="facts">
           <div class="fact"><div class="k">Rôle</div><div class="v">Design · 3D · Direction</div></div>
           <div class="fact"><div class="k">Année</div><div class="v mono">2025</div></div>
@@ -266,6 +266,7 @@ body{
       setTimeout(() => { location.href = a.getAttribute('href'); }, 320);
     });
   });
+window.addEventListener("pageshow", function(){ document.body.classList.remove("leaving"); document.body.style.opacity=""; });
 </script>
 </body>
 </html>

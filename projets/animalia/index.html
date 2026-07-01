@@ -178,6 +178,7 @@ body{
       setTimeout(() => { location.href = a.getAttribute('href'); }, 320);
     });
   });
+window.addEventListener("pageshow", function(){ document.body.classList.remove("leaving"); document.body.style.opacity=""; });
 </script>
 </body>
 </html>

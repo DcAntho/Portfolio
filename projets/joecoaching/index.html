@@ -111,7 +111,7 @@ body{
       <div class="pod">
         <div class="txt">
           <h3>Marche rapide.</h3>
-          <p>Un épisode long format filmé : la conversation, en mouvement. Captation et montage d'un podcast pensé pour la vidéo verticale comme pour l'audio.</p>
+          <p>Le podcast est là pour accompagner les gens à reprendre le sport — ou simplement marcher en musique, avec quelqu'un qui les motive.</p>
         </div>
         <div class="frame">
           <video controls playsinline preload="none" poster="../../media/joecoaching/joe-podcast-poster.jpg" src="../../media/joecoaching/joe-podcast.mp4"></video>
@@ -138,6 +138,7 @@ body{
     e.preventDefault(); document.body.style.transition='opacity .35s var(--ease)'; document.body.style.opacity='0';
     setTimeout(()=>{ location.href=a.getAttribute('href'); }, 320);
   }));
+  window.addEventListener("pageshow", function(){ document.body.classList.remove("leaving"); document.body.style.opacity=""; });
 </script>
 </body>
 </html>

@@ -3,12 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VISION·S — Sélection</title>
+<title>AnthonyDc</title>
 <meta name="description" content="Portfolio cinématographique — projets présentés en coverflow 3D." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<!-- Préchargement de l'image LCP (1ère capsule du coverflow) — équivalent next/image priority -->
+<link rel="preload" as="image" href="Poz-Capsule.avif" type="image/avif" fetchpriority="high" />
 
 <style>
 /* ============================================================
@@ -85,6 +88,15 @@ body::after{                     /* vignette ciné */
 }
 .nav a:hover, .nav a:focus-visible{ color:var(--ink); }
 .nav a:hover::after, .nav a:focus-visible::after{ transform:scaleX(1); }
+/* bouton menu mobile (caché sur desktop) */
+.nav-toggle{
+  display:none; width:42px; height:42px; border-radius:10px;
+  align-items:center; justify-content:center;
+  background:rgba(255,255,255,.04); border:1px solid var(--line); color:var(--ink);
+  cursor:pointer;
+}
+.nav-toggle svg{ width:20px; height:20px; }
+.nav-toggle:focus-visible{ outline:none; border-color:var(--accent); }
 .badge{
   display:flex; align-items:center; gap:8px;
   font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-dim);
@@ -154,6 +166,7 @@ body::after{                     /* vignette ciné */
   background-image:var(--grad); background-size:cover; background-position:center;
   box-shadow:0 28px 55px -22px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.05) inset;
 }
+.cover .art picture{ display:block; width:100%; height:100%; }
 .cover .art img{ width:100%; height:100%; object-fit:cover; display:block; }
 .cover .art::after{                  /* lustre */
   content:""; position:absolute; inset:0; pointer-events:none;
@@ -281,7 +294,22 @@ body::after{                     /* vignette ciné */
    ============================================================ */
 @media (max-width:900px){
   :root{ --cover-w:280px; --cover-h:389px; --focus:50vw; --tilt:-40deg; }
-  .nav{ display:none; }
+  .nav-toggle{ display:inline-flex; }
+  .nav{
+    position:fixed; top:70px; right:clamp(14px,3.5vw,46px); left:auto; transform:translateY(-8px);
+    flex-direction:column; gap:0; align-items:stretch;
+    min-width:190px; padding:8px;
+    background:rgba(18,16,24,.92); backdrop-filter:blur(14px);
+    border:1px solid var(--line); border-radius:14px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.8);
+    opacity:0; pointer-events:none;
+    transition:opacity .25s var(--ease), transform .25s var(--ease);
+    z-index:45;
+  }
+  .nav.open{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  .nav a{ padding:13px 14px; border-radius:9px; font-size:15px; color:var(--ink); }
+  .nav a:hover{ background:rgba(255,255,255,.05); }
+  .nav a::after{ display:none; }
   .intro{ max-width:none; right:clamp(18px,3.5vw,46px); }
   .intro p{ display:none; }
 }
@@ -321,9 +349,6 @@ body::after{                     /* vignette ciné */
 </head>
 <body>
 
-  <!-- MUSIQUE DE FOND -->
-  <audio id="bgm" src="CinematicBG.mp3" loop preload="auto"></audio>
-
   <!-- INTRO / SPLASH VIDÉO -->
   <div class="splash" id="splash" role="dialog" aria-label="Intro">
     <video id="introVideo" autoplay muted playsinline preload="auto">
@@ -334,15 +359,6 @@ body::after{                     /* vignette ciné */
   </div>
   <script>
   (function(){
-    /* ---- Musique de fond (volume très bas) ---- */
-    const bgm = document.getElementById('bgm');
-    bgm.volume = 0.10;
-    function startMusic(){ const r = bgm.play(); if (r && r.catch) r.catch(()=>{}); }
-    // l'autoplay audio est souvent bloqué → on démarre à la 1re interaction
-    ['pointerdown','keydown','wheel','touchstart'].forEach(ev =>
-      addEventListener(ev, startMusic, { once:true, passive:true }));
-    startMusic(); // tentative immédiate
-
     /* ---- Intro / splash ---- */
     const splash = document.getElementById('splash');
     const video  = document.getElementById('introVideo');
@@ -354,7 +370,6 @@ body::after{                     /* vignette ciné */
       if (entered) return; entered = true;
       splash.classList.add('hide');                 // fondu long (~1.4s, voir CSS)
       sessionStorage.setItem('introSeen','1');
-      startMusic();
       setTimeout(()=>{ splash.style.display='none'; }, 1450); // retire après le fondu
     }
 
@@ -376,11 +391,14 @@ body::after{                     /* vignette ciné */
 
   <header class="topbar">
     <div class="logo">ANTHONY DA COSTA</div>
-    <nav class="nav" aria-label="Sections">
+    <nav class="nav" id="nav" aria-label="Sections">
       <a href="index.html">Projets</a>
       <a href="apropos.html">À propos</a>
       <a href="contact.html">Contact</a>
     </nav>
+    <button class="nav-toggle" id="navToggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </header>
 
   <div class="intro">
@@ -433,8 +451,17 @@ PROJECTS.forEach((p, i) => {
   btn.setAttribute('aria-label', `${p.title} — ${p.cat}, ${p.year}`);
   const n  = String(i + 1).padStart(2, '0');
   const imgStyle = `object-position:${p.pos || 'center'};transform:scale(${p.zoom || 1});`;
-  const imgTag = p.img ? `<img src="${p.img}" alt="${p.title}" loading="lazy" style="${imgStyle}" onerror="this.remove()">` : '';
-  const refImg = p.img ? `<img src="${p.img}" alt="" loading="lazy" style="${imgStyle}" onerror="this.remove()">` : '';
+  const base = p.img ? p.img.replace(/\.[a-z0-9]+$/i, '') : '';
+  const eager = i === 0; // 1ère carte = image LCP → priorité (équivalent next/image priority)
+  const imgTag = p.img ? `
+    <picture>
+      <source srcset="${base}.avif" type="image/avif">
+      <source srcset="${p.img}" type="image/webp">
+      <img src="${p.img}" alt="${p.title}" width="720" height="999" decoding="async"
+           ${eager ? 'fetchpriority="high"' : 'loading="lazy"'}
+           style="${imgStyle}" onerror="this.closest('picture').remove()">
+    </picture>` : '';
+  const refImg = p.img ? `<img src="${p.img}" alt="" width="720" height="999" loading="lazy" decoding="async" style="${imgStyle}" onerror="this.remove()">` : '';
   // si l'image porte déjà le titre (hideMeta), on n'affiche pas le bloc texte
   const metaTag = p.hideMeta ? '' : `
     <span class="meta">
@@ -545,6 +572,24 @@ addEventListener('keydown', e=>{
 });
 document.getElementById('prev').addEventListener('click', ()=>goTo(active-1));
 document.getElementById('next').addEventListener('click', ()=>goTo(active+1));
+
+/* menu mobile */
+const navToggle = document.getElementById('navToggle');
+const navEl = document.getElementById('nav');
+navToggle.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const open = navEl.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', open);
+});
+navEl.querySelectorAll('a').forEach(a => a.addEventListener('click', ()=> navEl.classList.remove('open')));
+document.addEventListener('click', (e)=>{
+  if (navEl.classList.contains('open') && !navEl.contains(e.target) && e.target !== navToggle && !navToggle.contains(e.target)){
+    navEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false');
+  }
+});
+
+/* réinitialise le fondu au retour arrière (bfcache) → évite l'écran noir */
+addEventListener('pageshow', ()=>{ document.body.classList.remove('leaving'); document.body.style.opacity=''; });
 
 addEventListener('resize', measure);
 measure(); loop();

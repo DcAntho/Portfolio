@@ -32,9 +32,9 @@ body{
 .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 clamp(18px,4vw,48px); }
 .hero{ padding-top:clamp(86px,12vh,140px); }
 .hero-frame{ position:relative; width:100%; aspect-ratio:16/9; border-radius:var(--radius); overflow:hidden; background:var(--panel); box-shadow:var(--shadow), 0 0 0 1px var(--line) inset; }
-.hero-frame video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.hero-frame video, .hero-frame iframe{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; border:0; }
 .hero-frame .scrim{ position:absolute; inset:0; pointer-events:none; background:linear-gradient(to top, rgba(0,0,0,.6), transparent 42%); }
-.hero-cap{ position:absolute; left:clamp(20px,3vw,40px); bottom:clamp(20px,3vw,36px); z-index:2; }
+.hero-cap{ position:absolute; left:clamp(20px,3vw,40px); bottom:clamp(20px,3vw,36px); z-index:2; pointer-events:none; }
 .hero-cap h1{ font-size:clamp(46px,8vw,100px); font-weight:800; line-height:.9; letter-spacing:-.03em; }
 .hero-cap .ctx{ margin-top:12px; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); }
 .intro{ display:grid; grid-template-columns:1.1fr 1fr; gap:clamp(28px,5vw,72px); padding:clamp(56px,9vh,120px) 0 clamp(20px,4vh,40px); }
@@ -68,7 +68,7 @@ body{
   <header class="hero">
     <div class="wrap">
       <div class="hero-frame">
-        <video src="../../media/danse/danse-hero.mp4" autoplay muted loop playsinline preload="auto"></video>
+        <iframe src="https://www.youtube.com/embed/1899UNItTJ4?rel=0&modestbranding=1" title="Danse — Follow the Flow" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         <div class="scrim"></div>
         <div class="hero-cap">
           <h1>Danse</h1>
@@ -111,6 +111,7 @@ body{
     e.preventDefault(); document.body.style.transition='opacity .35s var(--ease)'; document.body.style.opacity='0';
     setTimeout(()=>{ location.href=a.getAttribute('href'); }, 320);
   }));
+window.addEventListener("pageshow", function(){ document.body.classList.remove("leaving"); document.body.style.opacity=""; });
 </script>
 </body>
 </html>

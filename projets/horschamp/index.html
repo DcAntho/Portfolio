@@ -130,6 +130,7 @@ body{
     e.preventDefault(); document.body.style.transition='opacity .35s var(--ease)'; document.body.style.opacity='0';
     setTimeout(()=>{ location.href=a.getAttribute('href'); }, 320);
   }));
+window.addEventListener("pageshow", function(){ document.body.classList.remove("leaving"); document.body.style.opacity=""; });
 </script>
 </body>
 </html>
