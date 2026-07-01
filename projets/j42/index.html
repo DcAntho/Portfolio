@@ -75,9 +75,9 @@ body{
 
   <section class="wrap">
     <div class="intro">
-      <p class="lead">Un <b>logotype monogramme</b> taillé dans la grille — le « 42 » construit comme un signe, lisible en positif comme en négatif.</p>
+      <p class="lead">Réalisation du <b>logotype de J42</b> — la section junior de l'École 42, l'école de programmation.</p>
       <div>
-        <p class="body">Identité visuelle autour de J42 Lausanne : un logotype géométrique, anguleux et modulaire, pensé pour fonctionner sur fond clair comme sur fond sombre, en print comme en écran. Le « J » et le « 42 » s'imbriquent en un seul bloc.</p>
+        <p class="body">Un monogramme géométrique où le « J » et le « 42 » s'imbriquent en un seul bloc, lisible en positif comme en négatif, sur fond clair comme sur fond sombre. Ce logo est aujourd'hui utilisé par l'École 42 Lausanne — voir leur site : <a href="https://www.j42l.ch/" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor">j42l.ch</a>.</p>
         <div class="facts">
           <div class="fact"><div class="k">Rôle</div><div class="v">Identité · Logotype</div></div>
           <div class="fact"><div class="k">Année</div><div class="v mono">2024</div></div>
@@ -88,9 +88,9 @@ body{
   </section>
 
   <main class="wrap gallery">
-    <!-- présentation logo positif / négatif -->
+    <!-- logo J42 sur fond blanc -->
     <div class="block">
-      <span class="frame"><img src="../../media/j42/j42-logo.png" alt="J42 Lausanne — logotype positif et négatif" loading="lazy"></span>
+      <span class="frame" style="background:#fff"><img src="../../media/j42/j42-logo-white.webp" alt="J42 Lausanne — logotype" loading="lazy"></span>
     </div>
     <!-- déclinaison + note -->
     <div class="block split">
@@ -115,6 +115,7 @@ body{
     e.preventDefault(); document.body.style.transition='opacity .35s var(--ease)'; document.body.style.opacity='0';
     setTimeout(()=>{ location.href=a.getAttribute('href'); }, 320);
   }));
+window.addEventListener("pageshow", function(){ document.body.classList.remove("leaving"); document.body.style.opacity=""; });
 </script>
 </body>
 </html>
